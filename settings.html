@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings - Carter Keel</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header>
+    <a href="index.html" class="btn title-btn">Carter Keel</a>
+    <nav id="main-nav">
+      <a href="who-i-am.html" class="btn">Who I am</a>
+      <a href="job-history.html" class="btn">Job History</a>
+      <a href="blog.html" class="btn">Blog</a>
+      <a href="my-writings.html" class="btn">My Writings</a>
+      <a href="contact.html" class="btn">Contact Me</a>
+      <a href="settings.html" class="btn icon-btn" id="settings-nav-btn">
+        <img src="Image_Resources/settings_icon.png" alt="Settings">
+      </a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="settings-box">
+      <button id="secret-trigger" class="secret-trigger"></button>
+      
+      <div class="settings-row">
+        <label for="theme-select">Theme Style:</label>
+        <select id="theme-select" class="settings-dropdown">
+          <option value="light">Light Mode</option>
+          <option value="dark">Dark Mode</option>
+          <option value="cyberpunk">Cyberpunk Mode</option>
+        </select>
+      </div>
+
+      <div class="settings-row">
+        <label for="accent-color">Accent Color:</label>
+        <input type="color" id="accent-color" value="#333333">
+      </div>
+
+      <div class="settings-row">
+        <label for="font-select">Font Style:</label>
+        <select id="font-select" class="settings-dropdown">
+          <option value="sans-serif">Modern Sans</option>
+          <option value="serif">Classic Serif</option>
+          <option value="monospace">Monospace</option>
+        </select>
+      </div>
+
+      <div class="settings-row checkbox-row">
+        <label for="dyslexia-toggle">Dyslexia-Friendly Font:</label>
+        <input type="checkbox" id="dyslexia-toggle">
+      </div>
+
+      <div class="settings-row checkbox-row">
+        <label for="hacker-toggle">Hacker Mode (Terminal FX):</label>
+        <input type="checkbox" id="hacker-toggle">
+      </div>
+
+      <div class="settings-row slider-container">
+        <label for="ui-size">UI Size:</label>
+        <input type="range" id="ui-size" name="ui-size" min="5" max="100" step="5" value="50">
+        <span id="ui-size-val">50%</span>
+      </div>
+
+      <div class="settings-row stats-row" style="flex-direction: column; gap: 0.5rem;">
+        <span>Session Time: <strong id="session-timer">0s</strong></span>
+        <span style="font-size: 0.9rem; opacity: 0.7;">Last Website Update: July 28, 2026</span>
+      </div>
+
+      <div class="settings-row">
+        <button id="reset-btn" class="btn" style="border: 2px solid var(--border-color); width: 100%;">Reset to Default</button>
+      </div>
+
+    </div>
+  </main>
+
+  <div class="modal-overlay" id="secret-modal">
+    <div class="modal-box">
+      <h2>Enter Access Code</h2>
+      <p>Authorized personnel only.</p>
+      
+      <div class="code-input-container">
+        <input type="text" class="code-input" maxlength="1" autocomplete="off">
+        <input type="text" class="code-input" maxlength="1" autocomplete="off">
+        <input type="text" class="code-input" maxlength="1" autocomplete="off">
+        <input type="text" class="code-input" maxlength="1" autocomplete="off">
+      </div>
+
+      <p id="error-msg" style="color: red; display: none; font-size: 0.9rem; margin-top: -1rem;">Incorrect Code.</p>
+      
+      <button id="close-modal-btn" class="btn close-modal-btn">Cancel</button>
+    </div>
+  </div>
+
+  <script>
+    // Global Session Timer Initialization
+    if (!sessionStorage.getItem('sessionStartTime')) {
+      sessionStorage.setItem('sessionStartTime', Date.now());
+    }
+
+    const themeSelect = document.getElementById('theme-select');
+    const accentColorPicker = document.getElementById('accent-color');
+    const fontSelect = document.getElementById('font-select');
+    const dyslexiaToggle = document.getElementById('dyslexia-toggle');
+    const hackerToggle = document.getElementById('hacker-toggle');
+    const uiSizeSlider = document.getElementById('ui-size');
+    const uiSizeVal = document.getElementById('ui-size-val');
+    const resetBtn = document.getElementById('reset-btn');
+    const sessionTimer = document.getElementById('session-timer');
+
+    // Load Saved Preferences
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    themeSelect.value = savedTheme;
+
+    const savedAccent = localStorage.getItem('accent-color') || '#333333';
+    document.documentElement.style.setProperty('--accent-color', savedAccent);
+    accentColorPicker.value = savedAccent;
+
+    const savedFont = localStorage.getItem('font-style') || 'sans-serif';
+    document.documentElement.style.setProperty('--font-family', savedFont);
+    fontSelect.value = savedFont;
+
+    const savedDyslexia = localStorage.getItem('dyslexia-mode') === 'true';
+    dyslexiaToggle.checked = savedDyslexia;
+    if (savedDyslexia) document.documentElement.classList.add('dyslexia-font');
+
+    const savedHacker = localStorage.getItem('hacker-mode') === 'true';
+    hackerToggle.checked = savedHacker;
+    if (savedHacker) document.documentElement.classList.add('hacker-mode');
+
+    const savedScale = localStorage.getItem('ui-scale') || '50';
+    uiSizeSlider.value = savedScale;
+    uiSizeVal.textContent = `${savedScale}%`;
+    document.documentElement.style.setProperty('--ui-scale', savedScale / 100);
+
+    // SECRETS UNLOCK CHECKER
+    if (localStorage.getItem('secretsUnlocked') === 'true') {
+      const nav = document.getElementById('main-nav');
+      const settingsBtn = document.getElementById('settings-nav-btn');
+      const secretLink = document.createElement('a');
+      secretLink.href = 'secrets.html';
+      secretLink.className = 'btn';
+      secretLink.textContent = 'Secrets';
+      secretLink.style.color = 'var(--text-color)';
+      secretLink.style.fontWeight = 'bold';
+      nav.insertBefore(secretLink, settingsBtn);
+    }
+
+    // Event Listeners
+    themeSelect.addEventListener('change', (e) => {
+      const val = e.target.value;
+      document.documentElement.setAttribute('data-theme', val);
+      localStorage.setItem('theme', val);
+    });
+
+    accentColorPicker.addEventListener('input', (e) => {
+      const val = e.target.value;
+      document.documentElement.style.setProperty('--accent-color', val);
+      localStorage.setItem('accent-color', val);
+    });
+
+    fontSelect.addEventListener('change', (e) => {
+      const val = e.target.value;
+      document.documentElement.style.setProperty('--font-family', val);
+      localStorage.setItem('font-style', val);
+    });
+
+    dyslexiaToggle.addEventListener('change', (e) => {
+      const isChecked = e.target.checked;
+      if (isChecked) {
+        document.documentElement.classList.add('dyslexia-font');
+      } else {
+        document.documentElement.classList.remove('dyslexia-font');
+      }
+      localStorage.setItem('dyslexia-mode', isChecked);
+    });
+
+    hackerToggle.addEventListener('change', (e) => {
+      const isChecked = e.target.checked;
+      if (isChecked) {
+        document.documentElement.classList.add('hacker-mode');
+      } else {
+        document.documentElement.classList.remove('hacker-mode');
+      }
+      localStorage.setItem('hacker-mode', isChecked);
+    });
+
+    uiSizeSlider.addEventListener('input', (e) => {
+      const val = e.target.value;
+      uiSizeVal.textContent = `${val}%`;
+      document.documentElement.style.setProperty('--ui-scale', val / 100);
+      localStorage.setItem('ui-scale', val);
+    });
+
+    // Reset to Default
+    resetBtn.addEventListener('click', () => {
+      localStorage.clear();
+      sessionStorage.clear();
+      location.reload();
+    });
+
+    // Global Session Timer Update Loop
+    setInterval(() => {
+      const startTime = parseInt(sessionStorage.getItem('sessionStartTime'), 10);
+      const elapsedSeconds = Math.floor((Date.now() - startTime) / 1000);
+      let mins = Math.floor(elapsedSeconds / 60);
+      let secs = elapsedSeconds % 60;
+      sessionTimer.textContent = mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
+    }, 1000);
+
+    /* =======================================
+       EASTER EGG JAVASCRIPT (DIRECT CHECK)
+       ======================================= */
+    const secretTrigger = document.getElementById('secret-trigger');
+    const secretModal = document.getElementById('secret-modal');
+    const closeModalBtn = document.getElementById('close-modal-btn');
+    const codeInputs = document.querySelectorAll('.code-input');
+    const errorMsg = document.getElementById('error-msg');
+
+    secretTrigger.addEventListener('click', () => {
+      secretModal.classList.add('active');
+      codeInputs[0].focus();
+    });
+
+    closeModalBtn.addEventListener('click', () => {
+      secretModal.classList.remove('active');
+      errorMsg.style.display = 'none';
+      codeInputs.forEach(input => input.value = '');
+    });
+
+    codeInputs.forEach((input, index) => {
+      input.addEventListener('input', (e) => {
+        if (e.target.value.length === 1 && index < codeInputs.length - 1) {
+          codeInputs[index + 1].focus();
+        }
+        checkCode();
+      });
+
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Backspace' && e.target.value === '' && index > 0) {
+          codeInputs[index - 1].focus();
+        }
+      });
+    });
+
+    function checkCode() {
+      const codeEntered = Array.from(codeInputs).map(i => i.value).join('');
+      if (codeEntered.length === 4) {
+        if (codeEntered === '4512') {
+          localStorage.setItem('secretsUnlocked', 'true');
+          alert('Access Granted. Navigation updated.');
+          location.reload();
+        } else {
+          errorMsg.style.display = 'block';
+          codeInputs.forEach(input => {
+            input.value = '';
+            input.classList.add('error-shake');
+            setTimeout(() => input.classList.remove('error-shake'), 300);
+          });
+          codeInputs[0].focus();
+        }
+      }
+    }
+  </script>
+
+</body>
+</html>

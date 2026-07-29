@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Writings</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header>
+    <a href="index.html" class="btn title-btn">Carter Keel</a>
+    <nav id="main-nav">
+      <a href="who-i-am.html" class="btn">Who I am</a>
+      <a href="job-history.html" class="btn">Job History</a>
+      <a href="blog.html" class="btn">Blog</a>
+      <a href="my-writings.html" class="btn">My Writings</a>
+      <a href="contact.html" class="btn">Contact Me</a>
+      <a href="settings.html" class="btn icon-btn" id="settings-nav-btn">
+        <img src="Image_Resources/settings_icon.png" alt="Settings">
+      </a>
+    </nav>
+  </header>
+
+  <main>
+    <h1 class="page-title">PAGE 5</h1>
+  </main>
+
+  <script>
+    // 1. Apply Theme
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+
+    // 2. Apply Accent Color
+    const savedAccent = localStorage.getItem('accent-color') || '#333333';
+    document.documentElement.style.setProperty('--accent-color', savedAccent);
+
+    // 3. Apply Font Style
+    const savedFont = localStorage.getItem('font-style') || 'sans-serif';
+    document.documentElement.style.setProperty('--font-family', savedFont);
+
+    // 4. Apply Dyslexia Font Mode
+    if (localStorage.getItem('dyslexia-mode') === 'true') {
+      document.documentElement.classList.add('dyslexia-font');
+    }
+
+    // 5. Apply Hacker Mode
+    if (localStorage.getItem('hacker-mode') === 'true') {
+      document.documentElement.classList.add('hacker-mode');
+    }
+
+    // 6. Apply UI Scale
+    const savedScale = localStorage.getItem('ui-scale') || '50';
+    document.documentElement.style.setProperty('--ui-scale', savedScale / 100);
+
+    // SECRETS UNLOCK CHECKER
+    if (localStorage.getItem('secretsUnlocked') === 'true') {
+      const nav = document.getElementById('main-nav');
+      const settingsBtn = document.getElementById('settings-nav-btn');
+      const secretLink = document.createElement('a');
+      secretLink.href = 'secrets.html'; // This is the file you will need to create next!
+      secretLink.className = 'btn';
+      secretLink.textContent = 'Secrets';
+      secretLink.style.color = 'var(--text-color)';
+      secretLink.style.fontWeight = 'bold';
+      
+      // Inserts the Secrets button right before the Settings icon
+      nav.insertBefore(secretLink, settingsBtn);
+    }
+  </script>
+  
+</body>
+</html>
