@@ -61,24 +61,61 @@
       document.documentElement.classList.add('hacker-mode');
     }
 
-    // 6. Apply UI Scale
+    // 6. Apply Invert Gravity Mode
+    if (localStorage.getItem('invert-gravity') === 'true') {
+      document.documentElement.classList.add('invert-gravity');
+    }
+
+    // 7. Apply Custom Cursor Style
+    const savedCursor = localStorage.getItem('cursor-style') || 'default';
+    if (savedCursor === 'dot') document.documentElement.classList.add('cursor-pointer-dot');
+    if (savedCursor === 'crosshair') document.documentElement.classList.add('cursor-crosshair');
+    if (savedCursor === 'pencil') document.documentElement.classList.add('cursor-pencil');
+
+    // 8. Apply UI Scale
     const savedScale = localStorage.getItem('ui-scale') || '50';
     document.documentElement.style.setProperty('--ui-scale', savedScale / 100);
+
+    // Mouse Trail Animation Loop Globally
+    window.addEventListener('mousemove', (e) => {
+      if (localStorage.getItem('mouse-trail') === 'true') {
+        const dot = document.createElement('div');
+        dot.className = 'mouse-trail-dot';
+        dot.style.left = `${e.clientX}px`;
+        dot.style.top = `${e.clientY}px`;
+        document.body.appendChild(dot);
+
+        setTimeout(() => {
+          dot.style.opacity = '0';
+          dot.style.transform = 'translate(-50%, -50%) scale(0.2)';
+        }, 20);
+
+        setTimeout(() => {
+          dot.remove();
+        }, 400);
+      }
+    });
 
     // SECRETS UNLOCK CHECKER
     if (localStorage.getItem('secretsUnlocked') === 'true') {
       const nav = document.getElementById('main-nav');
       const settingsBtn = document.getElementById('settings-nav-btn');
       const secretLink = document.createElement('a');
-      secretLink.href = 'secrets.html'; // This is the file you will need to create next!
+      secretLink.href = 'secrets.html';
       secretLink.className = 'btn';
       secretLink.textContent = 'Secrets';
       secretLink.style.color = 'var(--text-color)';
       secretLink.style.fontWeight = 'bold';
-      
-      // Inserts the Secrets button right before the Settings icon
       nav.insertBefore(secretLink, settingsBtn);
     }
+
+    // Auto-highlight active page in nav
+    const currentPage = window.location.pathname.split("/").pop() || "index.html";
+    document.querySelectorAll("nav a").forEach(link => {
+      if (link.getAttribute("href") === currentPage) {
+        link.classList.add("active");
+      }
+    });
   </script>
 </body>
 </html>
