@@ -46,6 +46,9 @@
           <option value="sans-serif">Modern Sans</option>
           <option value="serif">Classic Serif</option>
           <option value="monospace">Monospace</option>
+          <option value="'Comic Neue', cursive">Playful (Comic)</option>
+          <option value="'Press Start 2P', monospace">Retro Arcade</option>
+          <option value="'Special Elite', cursive">Typewriter</option>
         </select>
       </div>
 
@@ -57,6 +60,36 @@
       <div class="settings-row checkbox-row">
         <label for="hacker-toggle">Hacker Mode (Terminal FX):</label>
         <input type="checkbox" id="hacker-toggle">
+      </div>
+
+      <div class="settings-row checkbox-row">
+        <label for="sound-toggle">Retro Sound Effects:</label>
+        <input type="checkbox" id="sound-toggle">
+      </div>
+
+      <div class="settings-row checkbox-row">
+        <label for="gravity-toggle">Invert Gravity Mode:</label>
+        <input type="checkbox" id="gravity-toggle">
+      </div>
+
+      <div class="settings-row checkbox-row">
+        <label for="trail-toggle">Custom Mouse Trail:</label>
+        <input type="checkbox" id="trail-toggle">
+      </div>
+
+      <div class="settings-row">
+        <label for="cursor-select">Custom Mouse Cursor:</label>
+        <select id="cursor-select" class="settings-dropdown">
+          <option value="default">Default Cursor</option>
+          <option value="dot">Glowing Dot</option>
+          <option value="crosshair">Crosshair</option>
+          <option value="pencil">Pencil</option>
+        </select>
+      </div>
+
+      <div class="settings-row" style="display: flex; gap: 1rem;">
+        <button id="cry-btn" class="btn" style="border: 2px solid var(--border-color); flex: 1;">Make me Cry</button>
+        <button id="end-btn" class="btn" style="border: 2px solid var(--border-color); flex: 1;">End Button</button>
       </div>
 
       <div class="settings-row slider-container">
@@ -96,6 +129,11 @@
   </div>
 
   <script>
+    // Play settings page sound effect if enabled
+    if (localStorage.getItem('sound-effects') === 'true') {
+      new Audio('Audio_Resources/settings_button.mp3').play().catch(e => {});
+    }
+
     // Global Session Timer Initialization
     if (!sessionStorage.getItem('sessionStartTime')) {
       sessionStorage.setItem('sessionStartTime', Date.now());
@@ -106,10 +144,19 @@
     const fontSelect = document.getElementById('font-select');
     const dyslexiaToggle = document.getElementById('dyslexia-toggle');
     const hackerToggle = document.getElementById('hacker-toggle');
+    const soundToggle = document.getElementById('sound-toggle');
+    const gravityToggle = document.getElementById('gravity-toggle');
+    const trailToggle = document.getElementById('trail-toggle');
+    const cursorSelect = document.getElementById('cursor-select');
+    const cryBtn = document.getElementById('cry-btn');
+    const endBtn = document.getElementById('end-btn');
     const uiSizeSlider = document.getElementById('ui-size');
     const uiSizeVal = document.getElementById('ui-size-val');
     const resetBtn = document.getElementById('reset-btn');
     const sessionTimer = document.getElementById('session-timer');
+
+    // Global Cry Audio Instance
+    const cryAudio = new Audio('Audio_Resources/cry_button.mp3');
 
     // Load Saved Preferences
     const savedTheme = localStorage.getItem('theme') || 'light';
@@ -131,6 +178,22 @@
     const savedHacker = localStorage.getItem('hacker-mode') === 'true';
     hackerToggle.checked = savedHacker;
     if (savedHacker) document.documentElement.classList.add('hacker-mode');
+
+    const savedSound = localStorage.getItem('sound-effects') === 'true';
+    soundToggle.checked = savedSound;
+
+    const savedGravity = localStorage.getItem('invert-gravity') === 'true';
+    gravityToggle.checked = savedGravity;
+    if (savedGravity) document.documentElement.classList.add('invert-gravity');
+
+    const savedTrail = localStorage.getItem('mouse-trail') === 'true';
+    trailToggle.checked = savedTrail;
+
+    const savedCursor = localStorage.getItem('cursor-style') || 'default';
+    cursorSelect.value = savedCursor;
+    if (savedCursor === 'dot') document.documentElement.classList.add('cursor-pointer-dot');
+    if (savedCursor === 'crosshair') document.documentElement.classList.add('cursor-crosshair');
+    if (savedCursor === 'pencil') document.documentElement.classList.add('cursor-pencil');
 
     const savedScale = localStorage.getItem('ui-scale') || '50';
     uiSizeSlider.value = savedScale;
@@ -189,6 +252,43 @@
       localStorage.setItem('hacker-mode', isChecked);
     });
 
+    soundToggle.addEventListener('change', (e) => {
+      localStorage.setItem('sound-effects', e.target.checked);
+    });
+
+    gravityToggle.addEventListener('change', (e) => {
+      const isChecked = e.target.checked;
+      if (isChecked) {
+        document.documentElement.classList.add('invert-gravity');
+      } else {
+        document.documentElement.classList.remove('invert-gravity');
+      }
+      localStorage.setItem('invert-gravity', isChecked);
+    });
+
+    trailToggle.addEventListener('change', (e) => {
+      localStorage.setItem('mouse-trail', e.target.checked);
+    });
+
+    cursorSelect.addEventListener('change', (e) => {
+      const val = e.target.value;
+      document.documentElement.classList.remove('cursor-pointer-dot', 'cursor-crosshair', 'cursor-pencil');
+      if (val === 'dot') document.documentElement.classList.add('cursor-pointer-dot');
+      if (val === 'crosshair') document.documentElement.classList.add('cursor-crosshair');
+      if (val === 'pencil') document.documentElement.classList.add('cursor-pencil');
+      localStorage.setItem('cursor-style', val);
+    });
+
+    cryBtn.addEventListener('click', () => {
+      cryAudio.currentTime = 0;
+      cryAudio.play().catch(err => console.log("Audio play blocked/error:", err));
+    });
+
+    endBtn.addEventListener('click', () => {
+      cryAudio.pause();
+      cryAudio.currentTime = 0;
+    });
+
     uiSizeSlider.addEventListener('input', (e) => {
       const val = e.target.value;
       uiSizeVal.textContent = `${val}%`;
@@ -211,6 +311,34 @@
       let secs = elapsedSeconds % 60;
       sessionTimer.textContent = mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
     }, 1000);
+
+    // Discord Constant Loop (Every 4 minutes = 240,000 ms)
+    setInterval(() => {
+      if (localStorage.getItem('sound-effects') === 'true') {
+        const discordAudio = new Audio('Audio_Resources/discord_constant.mp3');
+        discordAudio.play().catch(err => console.log("Discord audio blocked/error:", err));
+      }
+    }, 240000);
+
+    // Mouse Trail Animation Loop
+    window.addEventListener('mousemove', (e) => {
+      if (localStorage.getItem('mouse-trail') === 'true') {
+        const dot = document.createElement('div');
+        dot.className = 'mouse-trail-dot';
+        dot.style.left = `${e.clientX}px`;
+        dot.style.top = `${e.clientY}px`;
+        document.body.appendChild(dot);
+
+        setTimeout(() => {
+          dot.style.opacity = '0';
+          dot.style.transform = 'translate(-50%, -50%) scale(0.2)';
+        }, 20);
+
+        setTimeout(() => {
+          dot.remove();
+        }, 400);
+      }
+    });
 
     /* =======================================
        EASTER EGG JAVASCRIPT (DIRECT CHECK)
@@ -265,6 +393,14 @@
         }
       }
     }
+
+    // Auto-highlight active page in nav
+    const currentPage = window.location.pathname.split("/").pop() || "index.html";
+    document.querySelectorAll("nav a").forEach(link => {
+      if (link.getAttribute("href") === currentPage) {
+        link.classList.add("active");
+      }
+    });
   </script>
 
 </body>
