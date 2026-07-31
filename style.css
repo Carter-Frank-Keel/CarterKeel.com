@@ -1,6 +1,8 @@
 /* ================================
-   1. Theme & UI Scale Variables
+   1. Theme & UI Scale Variables & Fonts
    ================================ */
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Special+Elite&family=Comic+Neue:wght@700&display=swap');
+
 :root {
   --ui-scale: 0.5;
 
@@ -44,7 +46,7 @@
 }
 
 body {
-  font-family: var(--font-family, sans-serif);
+  font-family: var(--font-family);
   display: flex;
   flex-direction: column;
   min-height: 100vh;
@@ -114,6 +116,12 @@ nav {
   filter: invert(1);
 }
 
+nav a.active {
+  background-color: var(--btn-hover);
+  font-weight: bold;
+  border-bottom: 2px solid var(--accent-color);
+}
+
 /* ================================
    4. Scalable Main Content
    ================================ */
@@ -153,6 +161,7 @@ main {
   gap: 2rem;
   font-size: 20px; 
   margin: 2rem 0; 
+  position: relative; 
 }
 
 .settings-row {
@@ -195,7 +204,7 @@ main {
    ================================ */
 .hero-container {
   display: grid;
-  grid-template-columns: 1.6fr 1fr;
+  grid-template-columns: 1.2fr 1fr;
   align-items: center;
   gap: calc(5rem * var(--ui-scale));
   
@@ -214,8 +223,9 @@ main {
 .hero-text-box {
   display: flex;
   flex-direction: column;
-  max-width: 92%; 
-  padding-left: calc(5rem * var(--ui-scale));
+  max-width: 100%; 
+  padding-left: calc(3rem * var(--ui-scale));
+  padding-right: calc(2rem * var(--ui-scale));
 }
 
 .hero-text-box p {
@@ -356,35 +366,28 @@ html.hacker-mode label {
    11. Who I Am Page Text Scaling
    ================================ */
 .who-i-am-text p {
-  font-size: calc(3.2rem * var(--ui-scale)) !important; /* Smaller than default 4.8rem */
+  font-size: calc(3.2rem * var(--ui-scale)) !important;
 }
 
 /* ================================
    12. Easter Egg Modal & Secret Button
    ================================ */
 
-/* Make the settings box a positioning anchor for the invisible button */
-.settings-box {
-  position: relative; 
-}
-
-/* The Invisible Button */
 .secret-trigger {
   position: absolute;
   top: 0;
   right: 0;
   width: 50px;
   height: 50px;
-  cursor: default; /* Keeps it looking like normal background */
+  cursor: default;
   background: transparent;
   border: none;
   outline: none;
   z-index: 10;
 }
 
-/* The Modal Overlay */
 .modal-overlay {
-  display: none; /* Hidden by default */
+  display: none;
   position: fixed;
   top: 0;
   left: 0;
@@ -401,7 +404,6 @@ html.hacker-mode label {
   display: flex;
 }
 
-/* The Modal Box */
 .modal-box {
   background-color: var(--card-bg);
   border: 2px solid var(--border-color);
@@ -425,7 +427,6 @@ html.hacker-mode label {
   opacity: 0.8;
 }
 
-/* The 4-Digit Input Boxes */
 .code-input-container {
   display: flex;
   justify-content: center;
@@ -457,7 +458,6 @@ html.hacker-mode label {
   font-size: 1.2rem;
 }
 
-/* Quick animation for incorrect code */
 @keyframes shake {
   0%, 100% { transform: translateX(0); }
   25% { transform: translateX(-5px); }
@@ -466,4 +466,115 @@ html.hacker-mode label {
 .error-shake {
   animation: shake 0.2s ease-in-out;
   border-color: red !important;
+}
+
+/* ================================
+   13. Invert Gravity, Trails, & Cursors
+   ================================ */
+
+html.invert-gravity body {
+  transform: rotate(180deg);
+  transform-origin: center center;
+}
+
+.mouse-trail-dot {
+  position: fixed;
+  width: 10px;
+  height: 10px;
+  background-color: var(--accent-color, #333333);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 99999;
+  transform: translate(-50%, -50%);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+  opacity: 0.7;
+}
+
+html.cursor-pointer-dot body {
+  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="%23ff007f"/></svg>') 12 12, auto;
+}
+
+html.cursor-crosshair body {
+  cursor: crosshair;
+}
+
+html.cursor-pencil body {
+  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z" fill="%2300ffcc"/></svg>') 0 24, auto;
+}
+
+/* ================================
+   14. Writings Page Sidebar Layout
+   ================================ */
+
+.writings-layout-container {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  width: 100%;
+  min-height: calc(100vh - 100px);
+}
+
+.writings-sidebar {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--header-bg);
+  border-right: 2px solid var(--border-color);
+  padding: 0;
+}
+
+.writing-category-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem 1.5rem;
+  background-color: var(--card-bg);
+  color: var(--text-color);
+  border: none;
+  border-bottom: 2px solid var(--border-color);
+  font-size: calc(2.2rem * var(--ui-scale));
+  font-weight: bold;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color 0.2s, color 0.2s;
+  flex: 1;
+}
+
+.writing-category-btn:hover,
+.writing-category-btn.active-category {
+  background-color: var(--btn-hover);
+  color: var(--accent-color);
+}
+
+.writings-content-area {
+  padding: 4rem;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  font-size: calc(2.5rem * var(--ui-scale));
+  line-height: 1.6;
+}
+
+.writing-section-content {
+  display: none;
+}
+
+.writing-section-content.active-section {
+  display: block;
+}
+
+/* Introductory Writings View Styling */
+.writings-intro-box {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.writings-intro-box h2 {
+  font-size: calc(3.5rem * var(--ui-scale));
+  font-weight: bold;
+}
+
+.writings-intro-box p {
+  font-size: calc(2.2rem * var(--ui-scale));
+  line-height: 1.6;
+  opacity: 0.9;
 }
